@@ -2,7 +2,22 @@
 
 A local-first React app that pulls analyst ratings and historical price returns for a watchlist of stocks using the [Financial Modeling Prep](https://financialmodelingprep.com/) (FMP) API.
 
-![dark table with tickers, ratings, and 3 M / 6 M / 1 Y returns](.github/preview.png)
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Stock Back-Tester                                               │
+│  Analyst ratings & historical returns                            │
+├─────────────────────────────────┬────────────────────────────────┤
+│  NFLX  [Add]                    │  [Reset]  [Run Backtest]       │
+├───┬────────┬──────────┬─────────┬────────┬────────┬─────────────┤
+│   │ TICKER │  PRICE   │ RATING  │   3M   │   6M   │     1Y      │
+├───┼────────┼──────────┼─────────┼────────┼────────┼─────────────┤
+│ ● │  AAPL  │ $213.50  │   Buy   │  +8.2% │ +12.4% │    +18.7%   │
+│ ● │  MSFT  │ $421.30  │   Buy   │  +5.1% │  +9.8% │    +24.3%   │
+│ ● │  NVDA  │ $875.40  │ St.Buy  │ +18.7% │ +42.1% │    +85.2%   │
+│ ● │  TSLA  │ $196.80  │  Hold   │  -3.4% │  -8.9% │     -2.1%   │
+│ ● │   JPM  │ $198.20  │   Buy   │  +4.7% │  +8.2% │    +22.1%   │
+└───┴────────┴──────────┴─────────┴────────┴────────┴─────────────┘
+```
 
 ---
 
@@ -17,15 +32,61 @@ A local-first React app that pulls analyst ratings and historical price returns 
 
 ---
 
+## Architecture
+
+### Development mode (`npm run dev`)
+
+```mermaid
+flowchart LR
+    subgraph dev["Local machine"]
+        direction TB
+        browser["Browser\nlocalhost:5173"]
+        vite["Vite dev server\n:5173"]
+        express["Express proxy\nserver/index.js :3001"]
+        env[".env\nFMP_API_KEY=…"]
+    end
+
+    fmp["Financial Modeling\nPrep API\n(external)"]
+
+    browser -- "page load" --> vite
+    browser -- "GET /api/stock/:ticker" --> vite
+    vite -- "proxied to :3001" --> express
+    express -- "reads key from" --> env
+    express -- "HTTPS + API key\n(key never leaves server)" --> fmp
+    fmp -- "JSON prices + rating" --> express
+    express -- "filtered JSON" --> browser
+```
+
+The FMP key is read server-side only and **never bundled into the JavaScript** the browser downloads. The browser only ever talks to the Vite dev server on port 5173.
+
+### Production mode (`npm run build && npm start`)
+
+```mermaid
+flowchart LR
+    subgraph server["Your server"]
+        direction TB
+        express["Express :3001\nserves dist/ + /api routes"]
+        env["env var\nFMP_API_KEY"]
+    end
+
+    fmp["Financial Modeling\nPrep API\n(external)"]
+
+    browser["Browser"] -- "GET /" --> express
+    express -- "static HTML/JS\n(built bundle)" --> browser
+    browser -- "GET /api/stock/:ticker" --> express
+    express -- "reads" --> env
+    express -- "HTTPS + API key" --> fmp
+    fmp -- JSON --> express
+    express -- JSON --> browser
+```
+
+In production a single Express process serves both the pre-built React app (from `dist/`) and the `/api` proxy — one port, no Vite needed.
+
+---
+
 ## How the API key is protected
 
-The app uses a small **Express proxy server** that runs alongside the Vite dev server (or serves the production build). All calls to FMP go through this server:
-
-```
-Browser  →  /api/stock/:ticker  →  Express (server/index.js)  →  FMP API
-```
-
-The FMP key is read from a `.env` file **server-side only** and is never included in the JavaScript bundle that reaches the browser. When you push to a server, you set `FMP_API_KEY` as an environment variable there — no secrets in the repository.
+The app uses a small **Express proxy server** that runs alongside the Vite dev server (or serves the production build). All calls to FMP go through this server — the key is read from `.env` server-side and is never included in the JavaScript bundle that reaches the browser. When you push to a server, you set `FMP_API_KEY` as an environment variable there — no secrets in the repository.
 
 ---
 
