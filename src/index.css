@@ -1,0 +1,295 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:            #0f172a;
+  --surface:       #1e293b;
+  --surface2:      #273549;
+  --border:        #2d3f55;
+  --row-hover:     #1a2638;
+  --text:          #e2e8f0;
+  --muted:         #64748b;
+  --blue:          #3b82f6;
+  --blue-hover:    #2563eb;
+  --green:         #22c55e;
+  --green-bg:      #0d2b1a;
+  --green-border:  #166534;
+  --yellow:        #eab308;
+  --yellow-bg:     #1c1a09;
+  --yellow-border: #713f12;
+  --red:           #ef4444;
+  --red-bg:        #2b0d0d;
+  --red-border:    #991b1b;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Layout ── */
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 36px 20px 60px;
+}
+
+/* ── Header ── */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.last-run {
+  font-size: 12px;
+  color: var(--muted);
+  padding-top: 5px;
+  white-space: nowrap;
+}
+
+/* ── Toolbar ── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.ticker-input-group,
+.action-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ticker-input {
+  width: 170px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.ticker-input::placeholder {
+  text-transform: none;
+  color: var(--muted);
+}
+
+.ticker-input:focus {
+  border-color: var(--blue);
+}
+
+/* ── Buttons ── */
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s, opacity 0.12s;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+.btn-primary:not(:disabled):hover { background: var(--blue-hover); }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:not(:disabled):hover { background: var(--border); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:not(:disabled):hover {
+  color: var(--text);
+  border-color: #4b617a;
+}
+
+/* ── Table ── */
+
+.table-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #182333;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: var(--row-hover);
+}
+
+.row-error {
+  opacity: 0.6;
+}
+
+.ticker-cell {
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  font-size: 13px;
+}
+
+/* ── Status dot ── */
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-dot.pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+/* ── Rating badges ── */
+
+.badge {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.badge-buy  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+.badge-neutral { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow-border); }
+.badge-sell { background: var(--red-bg);   color: var(--red);    border-color: var(--red-border); }
+
+/* ── Return colors ── */
+
+.ret-pos     { color: var(--green);  font-weight: 600; }
+.ret-neg     { color: var(--red);    font-weight: 600; }
+.ret-neutral { color: #94a3b8;       font-weight: 500; }
+.muted       { color: var(--muted); }
+
+/* ── Remove button ── */
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 17px;
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+.remove-btn:hover:not(:disabled) {
+  color: var(--red);
+  background: var(--red-bg);
+}
+
+.remove-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+/* ── Error panel ── */
+
+.error-panel {
+  margin-top: 12px;
+  background: var(--red-bg);
+  border: 1px solid var(--red-border);
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.error-item {
+  font-size: 13px;
+  color: #fca5a5;
+  padding: 2px 0;
+}
+
+.error-item strong {
+  color: var(--red);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 600px) {
+  .header { flex-direction: column; gap: 6px; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .ticker-input { width: 100%; }
+  .ticker-input-group, .action-group { width: 100%; justify-content: space-between; }
+}
